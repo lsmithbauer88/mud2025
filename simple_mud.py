@@ -78,10 +78,12 @@ class Game:
 
     def _create_player(self) -> Character:
         """Prompt for a name and class, ensuring clear prompts on Windows."""
+        print("Welcome to SimpleMUD, a short offline dungeon crawl.")
+        print("Let's create your character.", flush=True)
         name = ""
         while not name:
             name = input("Enter your character's name: ").strip()
-        print()  # put the next prompt on a new line for clarity
+        print(flush=True)  # put the next prompt on a new line for clarity
 
         role = ""
         while role not in {"warrior", "wizard", "rogue"}:
