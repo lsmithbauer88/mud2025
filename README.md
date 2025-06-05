@@ -10,7 +10,11 @@ Ensure you have Python 3 installed. To start the game, run:
 python3 simple_mud.py
 ```
 
-You will be prompted to enter a name and choose a class (`warrior`, `wizard`, or `rogue`). Then explore the four-room dungeon, fight wandering enemies, and try to survive. The game runs entirely offline using only the Python standard library.
+After a short introduction, you will be prompted to enter a name and choose a class (`warrior`, `wizard`, or `rogue`). Then explore the four-room dungeon, fight wandering enemies, and try to survive. The game runs entirely offline using only the Python standard library.
+
+If your terminal does not show the class prompt right away (for example in Git
+Bash on Windows), simply press <enter> after typing your name and the next
+prompt will appear on a new line.
 
 ### Controls
 
