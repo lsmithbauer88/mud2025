@@ -6,6 +6,18 @@ import textwrap
 from dataclasses import dataclass, field
 from typing import Dict, List
 
+
+try:
+    from colorama import init as colorama_init, Fore, Style
+    colorama_init()
+except ImportError:  # colour is optional
+    class _Dummy:
+        def __getattr__(self, name: str) -> str:
+            return ""
+
+    Fore = Style = _Dummy()
+
+
 # Directions used in the dungeon
 DIRECTIONS = ("north", "south", "east", "west")
 
@@ -57,10 +69,24 @@ class Game:
         self.enemies = self._spawn_enemies()
 
     def _build_rooms(self) -> Dict[str, Room]:
-        entrance = Room("Entrance", "You stand at the dungeon entrance. A dark hall lies north.")
-        hall = Room("Hall", "A damp corridor stretches before you.")
-        armory = Room("Armory", "Old weapons litter the floor.")
-        library = Room("Library", "Dusty books fill ancient shelves.")
+
+        entrance = Room(
+            "Entrance",
+            "You stand at the moss-covered mouth of an ancient dungeon. A dark hall beckons to the north."
+        )
+        hall = Room(
+            "Hall",
+            "A damp corridor stretches before you. Faint echoes bounce along the stone walls."
+        )
+        armory = Room(
+            "Armory",
+            "Rusty blades and dented armour lie scattered in disarray. The air smells of old metal."
+        )
+        library = Room(
+            "Library",
+            "Dusty tomes fill towering shelves, their wisdom long forgotten."
+        )
+
 
         entrance.connect("north", hall)
         hall.connect("south", entrance)
@@ -80,6 +106,8 @@ class Game:
 
         """Prompt for a name and class, ensuring clear prompts on Windows."""
         print("Welcome to SimpleMUD, a short offline dungeon crawl.")
+        print("Strange whispers echo from somewhere below...", flush=True)
+
         print("Let's create your character.", flush=True)
         name = ""
         while not name:
@@ -112,31 +140,39 @@ class Game:
         r = self.player.room
         if not r:
             return
-        print(f"\n== {r.name} ==")
+
+        print(Fore.CYAN + f"\n== {r.name} ==" + Style.RESET_ALL)
+
         for line in textwrap.wrap(r.description, width=60):
             print(line)
         if r.neighbors:
             print("Exits:", ", ".join(r.neighbors.keys()))
         for e in self._living_enemies_in_room(r):
-            print(f"A {e.name} is here!")
+
+            print(Fore.RED + f"A {e.name} is here!" + Style.RESET_ALL)
+
 
     def _move_player(self, direction: str) -> None:
         if direction in self.player.room.neighbors:
             self.player.room = self.player.room.neighbors[direction]
-            print(f"You move {direction}.")
+
+            print(Fore.GREEN + f"You move {direction}." + Style.RESET_ALL)
         else:
-            print("You can't go that way.")
+            print(Fore.YELLOW + "You can't go that way." + Style.RESET_ALL)
+
 
     def _attack(self) -> None:
         enemies = self._living_enemies_in_room(self.player.room)
         if enemies:
             target = enemies[0]
             target.hp -= self.player.atk
-            print(f"You hit the {target.name}! It has {target.hp} hp left.")
+
+            print(Fore.YELLOW + f"You hit the {target.name}! It has {target.hp} hp left." + Style.RESET_ALL)
             if target.hp <= 0:
-                print(f"The {target.name} is defeated!")
+                print(Fore.GREEN + f"The {target.name} is defeated!" + Style.RESET_ALL)
         else:
-            print("No enemy to attack.")
+            print(Fore.YELLOW + "No enemy to attack." + Style.RESET_ALL)
+
 
     def _enemy_actions(self) -> None:
         for e in self.enemies:
@@ -144,7 +180,9 @@ class Game:
                 continue
             if e.room == self.player.room:
                 self.player.hp -= e.atk
-                print(f"The {e.name} hits you! You have {self.player.hp} hp.")
+
+                print(Fore.RED + f"The {e.name} hits you! You have {self.player.hp} hp." + Style.RESET_ALL)
+
             else:
                 e.move()
 
@@ -165,7 +203,9 @@ class Game:
         return True
 
     def play(self) -> None:
-        print("\nWelcome to SimpleMUD! Type 'help' for commands.")
+
+        print(Fore.CYAN + "\nWelcome to SimpleMUD! Type 'help' for commands." + Style.RESET_ALL)
+
         running = True
         while running and self.player.hp > 0:
             self._describe_room()
@@ -175,10 +215,12 @@ class Game:
                 break
             self._enemy_actions()
             if all(not e.is_alive() for e in self.enemies):
-                print("You defeated all enemies. Victory!")
+
+                print(Fore.GREEN + "You defeated all enemies. Victory!" + Style.RESET_ALL)
                 break
         if self.player.hp <= 0:
-            print("You have been defeated...")
+            print(Fore.RED + "You have been defeated..." + Style.RESET_ALL)
+
 
 if __name__ == "__main__":
     Game().play()
