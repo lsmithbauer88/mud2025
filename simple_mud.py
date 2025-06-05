@@ -77,6 +77,7 @@ class Game:
         }
 
     def _create_player(self) -> Character:
+
         """Prompt for a name and class, ensuring clear prompts on Windows."""
         print("Welcome to SimpleMUD, a short offline dungeon crawl.")
         print("Let's create your character.", flush=True)
